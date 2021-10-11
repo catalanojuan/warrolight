@@ -18,7 +18,7 @@
   "dependencies": {
     "cellular-automata": "^2.0.1",
     "cli-table2": "^0.2.0",
-    "color-string": "^1.5.3",
+    "color-string": "^1.5.5",
     "colors": "^1.4.0",
     "dgram": "^1.0.1",
     "lodash": "^4.17.15",
