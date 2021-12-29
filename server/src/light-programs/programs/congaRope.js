@@ -12,8 +12,9 @@ module.exports = class CongaShooting extends LightProgram {
     this.rope = {pos: this.center - this.segmentSize, length: 2 * this.segmentSize};
     this.explosionLevel = 0;
     this.time = 0;
-    this.audioWindow1 = new Array(600).fill(0);
-    this.audioWindow2 = new Array(600).fill(0);
+    this.suspended = 0;
+    this.audioWindow1 = new Array(60).fill(0);
+    this.audioWindow2 = new Array(60).fill(0);
     this.maxVolume = 0;
   }
 
@@ -21,10 +22,10 @@ module.exports = class CongaShooting extends LightProgram {
       let volP1 = (audio[this.config.soundMetricP1] || 0) * this.config.multiplier;
       let volP2 = (audio[this.config.soundMetricP2] || 0) * this.config.multiplier;
 
-      this.audioWindow1.unshift();
+      this.audioWindow1.splice(0,1);
       this.audioWindow1.push(volP1 > this.config.fireThreshold ? volP1 : 0);
 
-      this.audioWindow2.unshift();
+      this.audioWindow2.splice(0,1);
       this.audioWindow2.push(volP2 > this.config.fireThreshold ? volP2 : 0);
   }
 
@@ -36,29 +37,30 @@ module.exports = class CongaShooting extends LightProgram {
       if(burstSizeP1 < this.config.burstThreshold){
           burstSizeP1 = 0;
       }
-      if (burstSizeP1 > this.config.burstMaxLength){
+      /*if (burstSizeP1 > this.config.burstMaxLength){
           burstSizeP1 = this.config.burstMaxLength;
-      }
+      }*/
 
       if(burstSizeP2 < this.config.burstThreshold){
           burstSizeP2 = 0;
       }
+      /*
       if (burstSizeP2 > this.config.burstMaxLength){
           burstSizeP2 = this.config.burstMaxLength;
-      }
+      }*/
       return [burstSizeP1, burstSizeP2];
   }
 
-  pushToPlayerSide(player){
+  pushToPlayerSide(player, burstDiff){
       if(player == 'P1'){
-          this.rope.pos -= this.config.baseForce;
+          this.rope.pos -= this.config.baseForce * burstDiff;
           if (this.rope.pos < 0){
               this.rope.pos = 0;
           }
           this.resetBurstsForPlayer(player);
       }
       if(player == 'P2'){
-          this.rope.pos += this.config.baseForce;
+          this.rope.pos += this.config.baseForce * burstDiff;
           if(this.rope.pos >= this.numberOfLeds){
               this.rope.pos = this.numberOfLeds;
           }
@@ -83,31 +85,41 @@ module.exports = class CongaShooting extends LightProgram {
   gameOver(winner){
       this.rope = {pos: this.center - this.segmentSize, length: 2 * this.segmentSize};
       GlobalGame.game.score[winner] = GlobalGame.game.max();
+      this.suspended = 500;
   }
 
   drawFrame(draw, audio) {
-    audio = audio.currentFrame || {};
-    let bursts = this.detectBursts(audio);
-    let burstP1 = bursts[0];
-    let burstP2 = bursts[1];
+      let pos = Math.round(this.rope.pos);
+      if(!this.suspended)
+      {
+          audio = audio.currentFrame || {};
+          let [burstP1, burstP2] = this.detectBursts(audio);
 
-    if (burstP1 > burstP2){
-        this.pushToPlayerSide('P1');
-    }else if (burstP2 > burstP1){
-        this.pushToPlayerSide('P2');
-    }
+          if (burstP1 > burstP2) {
+              this.pushToPlayerSide('P1', (burstP1 - burstP2) / this.audioWindow1.length);
+          } else if (burstP2 > burstP1) {
+              this.pushToPlayerSide('P2', (burstP2 - burstP1) / this.audioWindow2.length);
+          }
 
-    if (this.rope.pos == 0){
-        this.gameOver(0);
-    }
-    if(this.rope.pos + this.rope.length == this.numberOfLeds){
-        this.gameOver(1);
-    }
+          if (pos <= 0) {
+              this.gameOver(0)
+          }
+          if (pos + this.rope.length >= this.numberOfLeds) {
+              this.gameOver(1);
+          }
+      } else {
+          this.suspended--;
+      }
+
+    const balance = (pos - this.numberOfLeds/2)/(this.numberOfLeds/2)/2+0.5;
     let baseColor = ColorUtils.HSVtoRGB(0, 0, this.explosionLevel/20);
     for (let i = 0; i < this.numberOfLeds; i++) {
         this.colors[i] = baseColor;
-        if (i >= this.rope.pos && i < this.rope.pos+this.rope.length){
-            this.colors[i] = [255,255,0];
+        if (i >= pos && i < pos+this.rope.length){
+            this.colors[i] = ColorUtils.mix(GlobalGame.game.player1Color, GlobalGame.game.player2Color, balance);
+            if(this.suspended && Math.round(this.suspended/10)%2) {
+                this.colors[i] = [0,0,0];
+            }
         }
     }
     draw(this.colors);
@@ -123,9 +135,9 @@ module.exports = class CongaShooting extends LightProgram {
     res.multiplier = { type: Number, min: 0, max: 2, step: 0.01, default: 1 };
     res.soundMetricP1 = {type: 'soundMetric', default: "rms"};
     res.soundMetricP2 = {type: 'soundMetric', default: "mic2_rms"};
-    res.fireThreshold = {type: Number, min: 0, max: 1, step: 0.01, default: 0.45};
-    res.baseForce = { type: Number, min: 1, max: 10, step: 1, default: 3 };
-    res.burstThreshold = {type: Number, min: 0, max: 20, step: 1, default: 3};
+    res.fireThreshold = {type: Number, min: 0, max: 1, step: 0.01, default: 0};
+    res.baseForce = { type: Number, min: 1, max: 400, step: 1, default: 100 };
+    res.burstThreshold = {type: Number, min: 0, max: 20, step: 1, default: 0};
     res.burstMaxLength = {type: Number, min: 0, max: 50, step: 1, default: 10};
     return res;
   }

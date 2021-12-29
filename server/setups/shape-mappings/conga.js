@@ -23,14 +23,14 @@ const n = 43 //(600 - headSideLeds * 3) / 12;
 module.exports = function getShapes() {
   // There is D, D2, D3 and D4 because its a point passed 4 times when "drawing" the shapes
   const allOfIt = _.range(0, 645);
-  const D = 4*n - 1;
-  const F2 = D+n;
-  const F = F2+n;
+  const D = 4*n - 1 - 2
+  const F2 = D+n + 1;
+  const F = F2+n+1;
   const D2 = F+n;
   const D3 = D2 + 3*headSideLeds;
-  const E2 = D3+n;
-  const E = E2+n;
-  const D4 = E+n;
+  const E2 = D3+n+1;
+  const E = E2+n+1;
+  const D4 = E+n+2;
   const A2 = 645;
 
   const headLeft = _.range(D2, D2+headSideLeds);
@@ -39,7 +39,7 @@ module.exports = function getShapes() {
   const head = [... headLeft, ... headTop, ... headRight];
 
   const fullLinePlayer1 = _.range(0, D);
-  const fullLinePlayer2 = _.range(A2-D, A2).reverse();
+  const fullLinePlayer2 = _.range(A2-D+1, A2).reverse();
   const fullArc = _.flatten([fullLinePlayer1, [... fullLinePlayer2].reverse()]) // Dont mutate original fullLinePLayer2
 
   const topRightSide = _.range(D, F2);
@@ -65,27 +65,29 @@ module.exports = function getShapes() {
 
   const sandClock = _.flatten([topTriangle, bottomTriangle]);
   const man = _.flatten([topRightSide, topLeftSide, bottomRightSide, bottomLeftSide, head]);
-
+  const X = _.flatten([topRightSide, topLeftSide, bottomRightSide, bottomLeftSide]);
   return {
-    allOfIt,
+    all: allOfIt,
+    man,
+    head,
+    X,
+    fullArc,
+    sandClock,
     fullLinePlayer1,
     fullLinePlayer2,
-    fullArc,
+    bottomTriangle,
+    topTriangle,
     arrowPlayer1,
     arrowPlayer2,
     topRightSide,
     topLeftSide,
     highestSide,
-    topTriangle,
     bottomLeftSide,
     bottomRightSide,
     lowestSide,
-    bottomTriangle,
-    sandClock,
-    man,
-    head,
     headLeft,
     headTop,
-    headRight
+    headRight,
+    allOfIt
   };
 }

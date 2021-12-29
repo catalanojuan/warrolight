@@ -7,7 +7,8 @@
       "type": "serial",
       "params": {
         "numberOfLights": 345,
-        "devicePortWindows": "COM3",
+        "baudRate": 1500000,
+        "devicePortWindows": "COM7",
         "devicePortUnix": "/dev/ttyACM0"
       }
     },
@@ -15,7 +16,8 @@
       "type": "serial",
       "params": {
         "numberOfLights": 300,
-        "devicePortWindows": "COM4",
+        "baudRate": 1500000,
+        "devicePortWindows": "COM5",
         "devicePortUnix": "/dev/ttyACM0"
       }
     }
@@ -30,7 +32,7 @@
     {
       "from": 345,
       "to":645,
-      "baseIndex": -300,
+      "baseIndex": -299,
       "deviceName": "serial2"
     }
   ]

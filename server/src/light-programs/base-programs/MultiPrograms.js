@@ -55,7 +55,7 @@ module.exports = function createMultiProgram(
         scheduleItem.programInstance.init();
       }
 
-      this.position = this.position || 0; // So that in case of restart it continues where it was left
+      const pos = random ? this.position = Math.floor(Math.random() * this.programSchedule.length) % this.programSchedule.length : 0;      this.position = this.position || pos; // So that in case of restart it continues where it was left
       this.nextStartChange = null;
     }
 

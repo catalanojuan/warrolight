@@ -49,7 +49,10 @@ module.exports = class MusicFrequencyDot extends LightProgram {
 
         let offsettedPosition = i % this.lastVolume.length;
         if (this.config.move) {
-          offsettedPosition = (i + this.frameNumber) % this.lastVolume.length;
+          let dir = this.config.reverse ? -1 : 1;
+          offsettedPosition = (i + this.frameNumber * dir) % this.lastVolume.length;
+          if(offsettedPosition < 0)
+            offsettedPosition += this.numberOfLeds;
         }
 
         if (Math.abs((i % width) - width / 2) < explosionLength) {
@@ -80,6 +83,7 @@ module.exports = class MusicFrequencyDot extends LightProgram {
     let res = super.configSchema();
     res.multiplier = { type: Number, min: 0, max: 2, step: 0.01, default: 1 };
     res.move = { type: Boolean, default: false };
+    res.reverse = { type: Boolean, default: false };
     res.blackAndWhite = { type: Boolean, default: false };
     res.soundMetric = {type: 'soundMetric', default: "fastPeakDecay"};
     res.power = { type: Number, min: 1, max: 20, step: 0.1, default: 2 };

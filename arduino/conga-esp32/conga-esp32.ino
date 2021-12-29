@@ -1,8 +1,11 @@
 #include <FastLED.h>
 
+#include <FastLED.h>
+
 // How many leds in your strip?
 // #define NUM_LEDS 150
 #define NUM_LEDS 345
+//#define NUM_LEDS 300
 
 // For led chips like Neopixels, which have a data line, ground, and power, you just
 // need to define DATA_PIN.  For led chipsets that are SPI based (four wires - data, clock,
@@ -30,7 +33,7 @@ void setup() {
 //    FastLED.addLeds<WS2812B, DATA_PIN2, GRB>(leds2, NUM_LEDS);
 //    FastLED.addLeds<WS2812B, DATA_PIN3, GRB>(leds3, NUM_LEDS);
 
-  FastLED.setMaxPowerInVoltsAndMilliamps(5, 300);
+  FastLED.setMaxPowerInVoltsAndMilliamps(5, 3000);
 
   Serial.begin(3*500000);           // set up Serial library at 500000 bps, the same than in Node.js
 

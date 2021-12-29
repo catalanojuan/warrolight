@@ -44,10 +44,10 @@ module.exports = [
   // Left and bottom triangle
   Stripe.old2d(... a, ... b, domeStickLeds*2 -1),
   Stripe.old2d(... b, ... c, domeStickLeds),
-  Stripe.old2d(... c, ... d, domeStickLeds),
-  Stripe.old2d(... d, ... f2, domeStickLeds),
-  Stripe.old2d(... f2, ... f, domeStickLeds),
-  Stripe.old2d(... f, ... d, domeStickLeds),
+  Stripe.old2d(... c, ... d, domeStickLeds - 3),
+  Stripe.old2d(... d, ... f2, domeStickLeds + 1),
+  Stripe.old2d(... f2, ... f, domeStickLeds + 1),
+  Stripe.old2d(... f, ... d, domeStickLeds + 1),
 
   // The head
   Stripe.old2d(... hc, ... htl, headSideLeds),
@@ -55,10 +55,10 @@ module.exports = [
   Stripe.old2d(... htr, ... hc, headSideLeds),
 
   // Right and top triangle
-  Stripe.old2d(... d, ... e2, domeStickLeds),
-  Stripe.old2d(... e2, ... e, domeStickLeds),
-  Stripe.old2d(... e, ... d, domeStickLeds),
-  Stripe.old2d(... d, ... c2, domeStickLeds),
+  Stripe.old2d(... d, ... e2, domeStickLeds + 1),
+  Stripe.old2d(... e2, ... e, domeStickLeds + 1),
+  Stripe.old2d(... e, ... d, domeStickLeds + 1),
+  Stripe.old2d(... d, ... c2, domeStickLeds -3),
   Stripe.old2d(... c2, ... b2, domeStickLeds),
   Stripe.old2d(... b2, ... a2, domeStickLeds*2 -1),
 ];

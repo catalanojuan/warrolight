@@ -15,6 +15,8 @@ const savedPresets = require(savedPresetsFilePath)
 
 // TODO: move this to some configuration file
 const programNames = [
+  "PROGRAM_Main_conga_NO_GAMES",
+  "PROGRAM_Main_conga",
   "mix",
   "congaShooting2",
   "congaScore",
